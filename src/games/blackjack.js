@@ -1,7 +1,7 @@
 // Tigerenten Blackjack — du gegen den Tigerenten-Dealer.
 // Setz-Spiel: Einsatz aus dem Enten-Konto. Blackjack zahlt 3:2.
 
-import { COLORS, clear, panel, text, drawTigerente } from "../core/draw.js";
+import { COLORS, FONTS, clear, panel, text, drawTigerente, currency } from "../core/draw.js";
 import { freshDeck, shuffle, handValue, drawCard, CARD_W, CARD_H } from "../core/cards.js";
 
 const MIN_BET = 25;
@@ -101,11 +101,11 @@ export function createBlackjack(app) {
       outcome = "blackjack";
       const win = Math.floor(staked * 2.5); // Einsatz zurück + 3:2
       wallet.add(win);
-      message = `BLACKJACK! +${win - staked} 🦆`;
+      message = `BLACKJACK! +${win - staked} Tigerenten`;
     } else if (dv > 21 || pv > dv) {
       outcome = "win";
       wallet.add(staked * 2);
-      message = `Gewonnen! +${staked} 🦆`;
+      message = `Gewonnen! +${staked} Tigerenten`;
     } else if (pv === dv) {
       outcome = "push";
       wallet.add(staked);
@@ -192,11 +192,11 @@ export function createBlackjack(app) {
     buttons = [];
 
     // Kopf
-    drawTigerente(ctx, 44, 42, 22);
-    text(ctx, "Tigerenten Blackjack", 78, 48, { font: "bold 24px system-ui, sans-serif", color: COLORS.gold });
-    panel(ctx, W - 220, 24, 180, 44, 10, COLORS.feltDark, COLORS.gold, 2);
-    text(ctx, `${wallet.get()} 🦆`, W - 130, 46, { font: "bold 20px system-ui", color: COLORS.gold, align: "center", baseline: "middle" });
-    text(ctx, "Esc = Lobby", W - 130, 84, { font: "12px system-ui, sans-serif", color: COLORS.muted, align: "center" });
+    drawTigerente(ctx, 50, 46, 22);
+    text(ctx, "Tigerenten-Blackjack", 92, 50, { font: `34px ${FONTS.display}`, color: COLORS.cream });
+    panel(ctx, W - 210, 22, 186, 48, 12, COLORS.paper, COLORS.ink, 3);
+    currency(ctx, W - 196, 46, wallet.get(), { r: 14, font: `900 22px ${FONTS.body}`, color: COLORS.ink });
+    text(ctx, "Esc = Lobby", W - 117, 86, { font: `700 12px ${FONTS.body}`, color: COLORS.muted, align: "center" });
 
     // Dealer
     text(ctx, "Tigerenten-Dealer", W / 2, 104, { font: "15px system-ui, sans-serif", color: COLORS.cream, align: "center" });
@@ -229,8 +229,8 @@ export function createBlackjack(app) {
     if (phase === "bet") {
       text(ctx, "Einsatz festlegen", W / 2, 230, { font: "18px system-ui", color: COLORS.cream, align: "center" });
       btn(W / 2 - 200, by, 50, 44, "−", () => { bet = Math.max(MIN_BET, bet - BET_STEP); });
-      panel(ctx, W / 2 - 140, by, 130, 44, 10, COLORS.feltDark, COLORS.gold, 2);
-      text(ctx, `${bet} 🦆`, W / 2 - 75, by + 22, { font: "bold 20px system-ui", color: COLORS.gold, align: "center", baseline: "middle" });
+      panel(ctx, W / 2 - 140, by, 130, 44, 10, COLORS.paper, COLORS.ink, 3);
+      currency(ctx, W / 2 - 118, by + 22, bet, { r: 13, font: `900 20px ${FONTS.body}`, color: COLORS.ink });
       btn(W / 2 - 0, by, 50, 44, "+", () => { bet = Math.min(wallet.get(), bet + BET_STEP); });
       btn(W / 2 + 70, by, 130, 44, "DEAL", deal, { fill: COLORS.red, stroke: COLORS.redDark });
       text(ctx, "←/→ Einsatz · Enter = Deal · Blackjack zahlt 3:2", W / 2, by + 70, {

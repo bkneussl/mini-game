@@ -15,6 +15,15 @@ const H = canvas.height;
 
 const wallet = createWallet();
 
+// Schriften vorladen, damit der Canvas sie nutzt (Render läuft pro Frame, sie "poppen" sonst nach).
+if (document.fonts && document.fonts.load) {
+  Promise.all([
+    document.fonts.load("700 20px Nunito"),
+    document.fonts.load("900 20px Nunito"),
+    document.fonts.load("20px 'Patrick Hand'"),
+  ]).catch(() => {});
+}
+
 const app = { canvas, ctx, W, H, wallet };
 
 // Spiele-Registry. create=null => Kachel ist gesperrt ("Bald") und wird Schritt für Schritt

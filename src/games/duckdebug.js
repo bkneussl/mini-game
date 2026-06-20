@@ -1,7 +1,7 @@
 // Arcade-Automat: "Rubber Duck Debugging" — als Casino-Szene.
 // Skill-Spiel: zahlt am Ende Goldene Gummienten nach Score aus.
 
-import { COLORS, clear, text, drawTigerente } from "../core/draw.js";
+import { COLORS, FONTS, clear, text, drawTigerente } from "../core/draw.js";
 
 const PAYOUT_PER_BUG = 5; // Enten pro gefixtem Bug
 
@@ -134,7 +134,7 @@ export function createDuckDebug(app) {
     if (state === STATE.PLAYING || state === STATE.GAMEOVER) {
       for (const bug of bugs) emoji("🐛", bug.x, bug.y, bug.h);
       for (const q of quacks) emoji("💬", q.x, q.y, q.h);
-      emoji("🦆", duck.x, duck.y, duck.h);
+      drawTigerente(ctx, duck.x + duck.w / 2, duck.y + duck.h / 2, duck.w * 0.4);
 
       text(ctx, `Bugs gefixt: ${score}`, 16, 26, { font: "20px system-ui, sans-serif", color: COLORS.white });
       text(ctx, "❤️".repeat(Math.max(0, lives)), W - 16, 24, { align: "right", font: "20px system-ui" });
@@ -157,8 +157,8 @@ export function createDuckDebug(app) {
       centered([
         { text: "Game Over", font: "bold 38px system-ui, sans-serif", color: "#ff6b6b", gap: 50 },
         { text: `Bugs gefixt: ${score}`, font: "24px system-ui, sans-serif", gap: 40 },
-        { text: `+${payout} 🦆 Goldene Gummienten`, font: "22px system-ui, sans-serif", color: COLORS.gold, gap: 34 },
-        { text: `Konto: ${wallet.get()} 🦆`, font: "18px system-ui, sans-serif", color: COLORS.cream, gap: 50 },
+        { text: `+${payout} Goldene Tigerenten`, font: `26px ${FONTS.display}`, color: COLORS.goldHi, gap: 34 },
+        { text: `Beutel: ${wallet.get()} Tigerenten`, font: `18px ${FONTS.body}`, color: COLORS.cream, gap: 50 },
         { text: "Enter = nochmal    ·    Esc = Lobby", font: "18px system-ui, sans-serif", color: "#7ee0a8" },
       ]);
     }

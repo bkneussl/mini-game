@@ -4,14 +4,23 @@
   box-sizing: border-box;
 }
 
+:root {
+  --paper: #f0e0bc;
+  --ink: #2b2118;
+  --gold: #e8a21c;
+  --wheel: #c5482e;
+}
+
 body {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 0%, #1c2a22 0%, #0a0f0c 70%);
-  color: #f5f5f5;
-  font-family: system-ui, sans-serif;
+  /* warmes Papier mit weichem Vignetten-Rand, wie eine Bilderbuchseite */
+  background: radial-gradient(circle at 50% 30%, #f6ecd0 0%, #e2cb9c 60%, #c9ad79 100%);
+  color: var(--ink);
+  font-family: "Nunito", system-ui, sans-serif;
+  padding: 1.2rem;
 }
 
 main {
@@ -19,22 +28,39 @@ main {
 }
 
 h1 {
-  margin-bottom: 1rem;
-  font-size: 1.6rem;
+  margin-bottom: 0.9rem;
+  font-family: "Patrick Hand", "Comic Sans MS", system-ui, cursive;
+  font-size: 2.4rem;
+  font-weight: 400;
   letter-spacing: 0.5px;
-  color: #ffcf3f;
+  color: var(--ink);
+  text-shadow: 2px 2px 0 rgba(232, 162, 28, 0.45);
+}
+
+/* Holzrahmen-Optik um den Canvas */
+.frame {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 18px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--gold) 0 14px,
+    #2b2118 14px 20px
+  );
+  box-shadow: 0 14px 34px rgba(43, 33, 24, 0.35);
 }
 
 canvas {
-  background: #0d3b2e;
-  border: 3px solid #ffcf3f;
+  display: block;
+  background: #f0e0bc;
+  border: 3px solid var(--ink);
   max-width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 0 40px rgba(255, 207, 63, 0.15);
+  border-radius: 10px;
 }
 
 #hint {
-  margin-top: 1rem;
-  color: #888;
-  font-size: 0.9rem;
+  margin-top: 0.9rem;
+  color: #6b5b45;
+  font-size: 0.95rem;
+  font-weight: 700;
 }

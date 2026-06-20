@@ -1,113 +1,131 @@
-// Casino-Lobby: Automaten auswählen, Enten-Konto, Weg zum Bitcoin-Shop.
+// Casino-Lobby im Janosch-Bilderbuchstil: Papier, Tintenstrich, Holzschild-Automaten,
+// goldene Tigerenten als Währung.
 
-import { COLORS, clear, panel, text, drawTigerente } from "../core/draw.js";
+import { COLORS, FONTS, clear, panel, inkPanel, text, drawTigerente, drawCoin, currency } from "../core/draw.js";
 
 const COLS = 4;
-const GAP = 18;
-const AREA = { x: 40, y: 150, w: 720, h: 396 };
+const GAP = 20;
+const AREA = { x: 36, y: 196, w: 728, h: 348 };
 
 export function createLobby(app) {
   const { ctx, W, H, wallet } = app;
 
-  // Kacheln = Spiele aus der Registry + Shop am Ende.
   const tiles = [
     ...app.games,
-    { id: "shop", name: "Bitcoin-Shop", tag: "Nachschub", accent: COLORS.gold, special: "shop" },
+    { id: "shop", name: "Bitcoin-Shop", tag: "Nachschub", accent: COLORS.wheel, special: "shop" },
   ];
 
   let selected = 0;
+  let t = 0;
 
   function layout() {
     const rows = Math.ceil(tiles.length / COLS);
     const tw = (AREA.w - (COLS - 1) * GAP) / COLS;
     const th = (AREA.h - (rows - 1) * GAP) / rows;
-    return tiles.map((t, i) => {
+    return tiles.map((tile, i) => {
       const c = i % COLS;
       const r = Math.floor(i / COLS);
-      return { ...t, x: AREA.x + c * (tw + GAP), y: AREA.y + r * (th + GAP), w: tw, h: th, i };
+      return { ...tile, x: AREA.x + c * (tw + GAP), y: AREA.y + r * (th + GAP), w: tw, h: th, i };
     });
   }
 
   let rects = layout();
 
   function activate(tile) {
-    if (tile.special === "shop") {
-      app.openShop();
-      return;
-    }
-    if (tile.create) {
-      app.setScene(tile.create(app));
-      return;
-    }
-    // gesperrt ("Bald") -> nichts tun
+    if (!tile) return;
+    if (tile.special === "shop") return app.openShop();
+    if (tile.create) return app.setScene(tile.create(app));
+  }
+
+  function header() {
+    // Hero-Schild
+    inkPanel(ctx, 24, 20, W - 48, 150, 16, COLORS.leaf, 3);
+
+    // Maskottchen links auf dem Schild
+    drawTigerente(ctx, 96, 86, 40);
+
+    text(ctx, "Tigerenten-Club", 176, 70, { font: `52px ${FONTS.display}`, color: COLORS.goldHi });
+    text(ctx, "C A S I N O", 180, 112, { font: `28px ${FONTS.display}`, color: COLORS.cream });
+    text(ctx, "Such dir einen Automaten aus — oh, wie schön ist Spielen!", 182, 142, {
+      font: `16px ${FONTS.body}`, color: COLORS.muted,
+    });
+
+    // Konto-Tafel oben rechts (Münze + Betrag)
+    const bw = 196, bx = W - 24 - bw, by = 38;
+    inkPanel(ctx, bx, by, bw, 64, 12, COLORS.paper, 3);
+    text(ctx, "DEIN BEUTEL", bx + 16, by + 18, { font: `700 11px ${FONTS.body}`, color: COLORS.inkSoft });
+    currency(ctx, bx + 16, by + 42, wallet.get(), { r: 15, font: `900 26px ${FONTS.body}`, color: COLORS.ink });
   }
 
   function render() {
-    clear(ctx, W, H, COLORS.felt);
-
-    // Kopfzeile
-    drawTigerente(ctx, 70, 60, 34);
-    text(ctx, "TIGERENTEN-CLUB CASINO", 120, 52, {
-      font: "bold 30px system-ui, sans-serif",
-      color: COLORS.gold,
-    });
-    text(ctx, "Wähle deinen Automaten — viel Glück!", 122, 82, {
-      font: "15px system-ui, sans-serif",
-      color: COLORS.muted,
-    });
-
-    // Enten-Konto (HUD oben rechts)
-    panel(ctx, W - 250, 36, 210, 52, 12, COLORS.feltDark, COLORS.gold, 2);
-    drawTigerente(ctx, W - 218, 62, 16);
-    text(ctx, `${wallet.get()}`, W - 60, 62, {
-      font: "bold 26px system-ui, sans-serif",
-      color: COLORS.gold,
-      align: "right",
-      baseline: "middle",
-    });
-    text(ctx, "Goldene Gummienten", W - 60, 80, {
-      font: "11px system-ui, sans-serif",
-      color: COLORS.muted,
-      align: "right",
-      baseline: "middle",
-    });
-
+    clear(ctx, W, H, COLORS.paper);
+    header();
     rects = layout();
-    for (const t of rects) {
-      const isSel = t.i === selected;
-      const locked = !t.special && !t.create;
-      const accent = t.accent || COLORS.cream;
 
-      panel(ctx, t.x, t.y, t.w, t.h, 14, locked ? "#0a2a20" : COLORS.feltLight,
-        isSel ? COLORS.gold : "#0a261c", isSel ? 4 : 2);
+    for (const tile of rects) {
+      const isSel = tile.i === selected;
+      const locked = !tile.special && !tile.create;
+      const accent = tile.accent || COLORS.gold;
+      const lift = isSel ? 6 : 0;
+      const x = tile.x, y = tile.y - lift, w = tile.w, h = tile.h;
 
-      // Akzent-Leiste oben
+      // Schatten
+      ctx.fillStyle = "rgba(43,33,24,0.18)";
+      panel(ctx, x + 3, y + 6, w, h, 14);
+      ctx.fill();
+
+      // Schild
+      inkPanel(ctx, x, y, w, h, 14, locked ? COLORS.paperDark : COLORS.cream, isSel ? 4 : 3);
+
+      // Kopfband in Akzentfarbe
       ctx.save();
-      panel(ctx, t.x, t.y, t.w, 8, 4, locked ? "#3a4a44" : accent);
+      roundClip(ctx, x, y, w, h, 14);
+      ctx.fillStyle = locked ? "#b6a079" : accent;
+      ctx.fillRect(x, y, w, 30);
       ctx.restore();
+      text(ctx, locked ? "BALD" : tile.tag.toUpperCase(), x + w / 2, y + 20, {
+        font: `700 11px ${FONTS.body}`, color: locked ? "#5a4a36" : COLORS.cream, align: "center", baseline: "middle",
+      });
 
       // Icon
-      drawTigerente(ctx, t.x + t.w / 2, t.y + t.h * 0.42, t.w * 0.16);
+      ctx.globalAlpha = locked ? 0.4 : 1;
+      drawTigerente(ctx, x + w / 2 - 2, y + h * 0.5, w * 0.15);
+      ctx.globalAlpha = 1;
 
-      // Name + Tag
-      text(ctx, t.name, t.x + t.w / 2, t.y + t.h * 0.7, {
-        font: "bold 16px system-ui, sans-serif",
-        color: locked ? COLORS.muted : COLORS.cream,
-        align: "center",
+      // Name
+      text(ctx, tile.name, x + w / 2, y + h - 22, {
+        font: `22px ${FONTS.display}`, color: locked ? "#8a7a5e" : COLORS.ink, align: "center",
       });
-      text(ctx, locked ? "Bald" : t.tag, t.x + t.w / 2, t.y + t.h * 0.84, {
-        font: "12px system-ui, sans-serif",
-        color: locked ? "#6f827b" : accent,
-        align: "center",
-      });
+
+      // Auswahl-Glow
+      if (isSel) {
+        ctx.save();
+        ctx.strokeStyle = COLORS.gold;
+        ctx.lineWidth = 3;
+        ctx.shadowColor = "rgba(232,162,28,0.6)";
+        ctx.shadowBlur = 14;
+        panel(ctx, x - 2, y - 2, w + 4, h + 4, 16, null, COLORS.gold, 3);
+        ctx.restore();
+      }
     }
 
-    // Fußzeile
-    text(ctx, "Pfeiltasten = wählen   ·   Enter = spielen   ·   Maus = klicken", W / 2, H - 22, {
-      font: "14px system-ui, sans-serif",
-      color: COLORS.muted,
-      align: "center",
+    // Fußleiste auf Papierstreifen
+    inkPanel(ctx, W / 2 - 260, H - 38, 520, 28, 8, COLORS.paperDark, 2);
+    text(ctx, "Pfeiltasten = wählen    ·    Enter = spielen    ·    Maus = klicken", W / 2, H - 24, {
+      font: `700 13px ${FONTS.body}`, color: COLORS.inkSoft, align: "center", baseline: "middle",
     });
+  }
+
+  function roundClip(ctx, x, y, w, h, r) {
+    const rr = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + rr, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rr);
+    ctx.arcTo(x + w, y + h, x, y + h, rr);
+    ctx.arcTo(x, y + h, x, y, rr);
+    ctx.arcTo(x, y, x + w, y, rr);
+    ctx.closePath();
+    ctx.clip();
   }
 
   return {
@@ -115,7 +133,9 @@ export function createLobby(app) {
       rects = layout();
     },
     exit() {},
-    update() {},
+    update(dt) {
+      t += dt;
+    },
     render,
     onKeyDown(e) {
       if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Enter"].includes(e.key)) e.preventDefault();
@@ -128,18 +148,18 @@ export function createLobby(app) {
     },
     onKeyUp() {},
     onMouseMove(p) {
-      for (const t of rects) {
-        if (p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y && p.y <= t.y + t.h) {
-          selected = t.i;
+      for (const tile of rects) {
+        if (p.x >= tile.x && p.x <= tile.x + tile.w && p.y >= tile.y - 6 && p.y <= tile.y + tile.h) {
+          selected = tile.i;
           break;
         }
       }
     },
     onMouseDown(p) {
-      for (const t of rects) {
-        if (p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y && p.y <= t.y + t.h) {
-          selected = t.i;
-          activate(t);
+      for (const tile of rects) {
+        if (p.x >= tile.x && p.x <= tile.x + tile.w && p.y >= tile.y - 6 && p.y <= tile.y + tile.h) {
+          selected = tile.i;
+          activate(tile);
           break;
         }
       }

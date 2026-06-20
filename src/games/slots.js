@@ -1,7 +1,7 @@
 // Tigerenten-Slot — 3-Walzen-Automat. Setz-Spiel.
 // 3 Gleiche zahlen nach Tabelle; 2 Tigerenten zahlen x2.
 
-import { COLORS, clear, panel, text, drawTigerente } from "../core/draw.js";
+import { COLORS, FONTS, clear, panel, text, drawTigerente, currency } from "../core/draw.js";
 
 const MIN_BET = 25;
 const BET_STEP = 25;
@@ -66,12 +66,12 @@ export function createSlots(app) {
     const [a, b, c] = final;
     if (a.id === b.id && b.id === c.id) {
       win = bet * a.mult;
-      message = a.id === "duck" ? `🦆 JACKPOT!  +${win - bet} 🦆` : `3× ${labelOf(a)}!  +${win - bet} 🦆`;
+      message = a.id === "duck" ? `JACKPOT!  +${win - bet} Tigerenten` : `3× ${labelOf(a)}!  +${win - bet} Tigerenten`;
     } else {
       const ducks = final.filter((s) => s.id === "duck").length;
       if (ducks === 2) {
         win = bet * 2;
-        message = `2 Tigerenten!  +${win - bet} 🦆`;
+        message = `2 Tigerenten!  +${win - bet} Tigerenten`;
       } else {
         win = 0;
         message = "Kein Gewinn — nochmal!";
@@ -135,11 +135,11 @@ export function createSlots(app) {
     clear(ctx, W, H, COLORS.felt);
     buttons = [];
 
-    drawTigerente(ctx, 44, 42, 22);
-    text(ctx, "Tigerenten-Slot", 78, 48, { font: "bold 24px system-ui, sans-serif", color: COLORS.gold });
-    panel(ctx, W - 220, 24, 180, 44, 10, COLORS.feltDark, COLORS.gold, 2);
-    text(ctx, `${wallet.get()} 🦆`, W - 130, 46, { font: "bold 20px system-ui", color: COLORS.gold, align: "center", baseline: "middle" });
-    text(ctx, "Esc = Lobby", W - 130, 84, { font: "12px system-ui, sans-serif", color: COLORS.muted, align: "center" });
+    drawTigerente(ctx, 50, 46, 22);
+    text(ctx, "Tigerenten-Slot", 92, 50, { font: `34px ${FONTS.display}`, color: COLORS.cream });
+    panel(ctx, W - 210, 22, 186, 48, 12, COLORS.paper, COLORS.ink, 3);
+    currency(ctx, W - 196, 46, wallet.get(), { r: 14, font: `900 22px ${FONTS.body}`, color: COLORS.ink });
+    text(ctx, "Esc = Lobby", W - 117, 86, { font: `700 12px ${FONTS.body}`, color: COLORS.muted, align: "center" });
 
     // Walzen
     const rw = 150, rh = 150, gap = 26;
@@ -165,16 +165,16 @@ export function createSlots(app) {
     text(ctx, message, W / 2, ry + rh + 50, { font: "bold 22px system-ui, sans-serif", color: col, align: "center" });
 
     // Paytable
-    text(ctx, "3× 🦆 = x20   ·   7️⃣ x12   ·   ₿ x8   ·   🔔 x6   ·   🍒 x4   ·   🐛 x2   ·   2× 🦆 = x2", W / 2, ry + rh + 84, {
-      font: "12px system-ui, sans-serif", color: COLORS.muted, align: "center",
+    text(ctx, "3× Ente = x20   ·   7️⃣ x12   ·   ₿ x8   ·   🔔 x6   ·   🍒 x4   ·   🐛 x2   ·   2× Ente = x2", W / 2, ry + rh + 84, {
+      font: `700 12px ${FONTS.body}`, color: COLORS.cream, align: "center",
     });
 
     // Steuerung
     const by = 510;
     const spinning = phase === "spinning";
     btn(W / 2 - 200, by, 50, 46, "−", () => { if (!spinning) bet = Math.max(MIN_BET, bet - BET_STEP); }, { enabled: !spinning });
-    panel(ctx, W / 2 - 140, by, 130, 46, 10, COLORS.feltDark, COLORS.gold, 2);
-    text(ctx, `${bet} 🦆`, W / 2 - 75, by + 23, { font: "bold 20px system-ui", color: COLORS.gold, align: "center", baseline: "middle" });
+    panel(ctx, W / 2 - 140, by, 130, 46, 10, COLORS.paper, COLORS.ink, 3);
+    currency(ctx, W / 2 - 118, by + 23, bet, { r: 13, font: `900 20px ${FONTS.body}`, color: COLORS.ink });
     btn(W / 2 - 0, by, 50, 46, "+", () => { if (!spinning) bet = Math.min(wallet.get(), bet + BET_STEP); }, { enabled: !spinning });
     btn(W / 2 + 70, by, 150, 46, spinning ? "..." : "SPIN", spin, { fill: COLORS.red, stroke: COLORS.redDark, enabled: !spinning });
   }

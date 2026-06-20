@@ -1,7 +1,7 @@
 // Simulierter Bitcoin-Shop — PARODIE. Kein echtes Geld, keine echte Blockchain.
 // "1.000 Goldene Gummienten für 1 € in BTC" — der Button täuscht die Zahlung nur vor.
 
-import { COLORS, clear, panel, text, drawTigerente } from "../core/draw.js";
+import { COLORS, FONTS, clear, panel, text, drawTigerente, drawCoin } from "../core/draw.js";
 
 const PACK = 1000;
 const FAKE_ADDR = "bc1q-tig3r3nte-c4sin0-n0t-r34l-d0nt-s3nd";
@@ -81,10 +81,12 @@ export function createShop(app) {
     if (phase === "offer") {
       drawQR(W / 2 - 80, 160, 160);
 
-      text(ctx, "1.000 🦆  für  1 € in BTC", W / 2, 360, {
-        font: "bold 24px system-ui, sans-serif",
+      drawCoin(ctx, W / 2 - 150, 360, 15);
+      text(ctx, "1.000 Goldene Tigerenten  für  1 € in BTC", W / 2 + 16, 360, {
+        font: `bold 22px ${FONTS.body}`,
         color: COLORS.cream,
         align: "center",
+        baseline: "middle",
       });
       text(ctx, `Sende an:  ${FAKE_ADDR}`, W / 2, 392, {
         font: "13px ui-monospace, monospace",
@@ -106,8 +108,8 @@ export function createShop(app) {
         color: "#7ee0a8",
         align: "center",
       });
-      text(ctx, `+1.000 🦆 gutgeschrieben  ·  Konto: ${wallet.get()} 🦆`, W / 2, 356, {
-        font: "18px system-ui, sans-serif",
+      text(ctx, `+1.000 gutgeschrieben  ·  Beutel: ${wallet.get()} Tigerenten`, W / 2, 356, {
+        font: `bold 18px ${FONTS.body}`,
         color: COLORS.cream,
         align: "center",
       });
