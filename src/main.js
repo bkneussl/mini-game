@@ -22,9 +22,11 @@ const wallet = createWallet();
 // Schriften vorladen, damit der Canvas sie nutzt (Render läuft pro Frame, sie "poppen" sonst nach).
 if (document.fonts && document.fonts.load) {
   Promise.all([
-    document.fonts.load("700 20px Nunito"),
-    document.fonts.load("900 20px Nunito"),
-    document.fonts.load("20px 'Patrick Hand'"),
+    document.fonts.load("500 20px Jost"),
+    document.fonts.load("600 20px Jost"),
+    document.fonts.load("700 20px Jost"),
+    document.fonts.load("400 20px Cinzel"),
+    document.fonts.load("800 20px Cinzel"),
   ]).catch(() => {});
 }
 
@@ -33,13 +35,14 @@ const app = { canvas, ctx, W, H, wallet };
 // Spiele-Registry. create=null => Kachel ist gesperrt ("Bald") und wird Schritt für Schritt
 // freigeschaltet, sobald das Spiel gebaut ist.
 app.games = [
-  { id: "blackjack", name: "Blackjack", tag: "Kartentisch", accent: COLORS.red, create: createBlackjack },
+  { id: "blackjack", name: "Blackjack", tag: "Kartentisch", accent: COLORS.gold, create: createBlackjack },
+  { id: "crash", name: "Enten-Crash", tag: "High-Roller", accent: COLORS.crimson, create: null },
+  { id: "roulette", name: "Enten-Roulette", tag: "Rad", accent: COLORS.gold, create: createRoulette },
   { id: "slots", name: "Tigerenten-Slot", tag: "Automat", accent: COLORS.gold, create: createSlots },
-  { id: "duckdebug", name: "Rubber Duck Debugging", tag: "Arcade", accent: "#7ee0a8", create: createDuckDebug },
-  { id: "higherlower", name: "Higher / Lower", tag: "Karten", accent: COLORS.sky, create: createHigherLower },
-  { id: "roulette", name: "Enten-Roulette", tag: "Rad", accent: "#ff9a3c", create: createRoulette },
-  { id: "snake", name: "Enten-Snake", tag: "Arcade", accent: "#9be36b", create: createSnake },
-  { id: "pinball", name: "Tigerenten-Pinball", tag: "Arcade", accent: "#d98cff", create: createPinball },
+  { id: "higherlower", name: "Higher / Lower", tag: "Karten", accent: COLORS.cream, create: createHigherLower },
+  { id: "duckdebug", name: "Rubber Duck Debugging", tag: "Arcade", accent: COLORS.emeraldHi, create: createDuckDebug },
+  { id: "snake", name: "Enten-Snake", tag: "Arcade", accent: COLORS.emeraldHi, create: createSnake },
+  { id: "pinball", name: "Tigerenten-Pinball", tag: "Arcade", accent: COLORS.crimson, create: createPinball },
 ];
 
 let current = null;

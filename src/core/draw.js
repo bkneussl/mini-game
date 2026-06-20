@@ -1,38 +1,47 @@
-// Design-System im Stil von Janoschs Tigerente: warmes Papier, Tinten-Strich,
-// Tiger-Gold, Räder-Rot, Panama-Grün. + Maskottchen & goldene Tigerenten-Münze (Währung).
+// Design-System: Black & Gold High-Roller (Art Déco).
+// Mattschwarz, Gold, Smaragd, Creme. Schriften Cinzel (Display) + Jost (UI/Zahlen).
+// Währung = "Entenchips" (Casino-Chip mit Enten-Silhouette).
 
 export const COLORS = {
-  paper: "#F0E0BC",
-  paperDark: "#E4D0A2",
-  ink: "#2B2118",
-  inkSoft: "#6B5B45",
-  tiger: "#F4B73E", // Tigerenten-Gelb
-  gold: "#E8A21C", // Währungsgold
-  goldHi: "#FFD45E",
-  goldDark: "#B9790F",
-  wheel: "#C5482E", // rote Räder / CTA
-  wheelDark: "#9A331D",
-  leaf: "#5E7A3A", // Tisch-Grün
-  leafDark: "#3E5526",
-  sky: "#6FA8C7",
-  cream: "#FBF1D8",
-  white: "#ffffff",
-  muted: "#C7B68F", // helle Hinweise auf dunklem Grund
-  stripe: "#241B12",
-  // Legacy-Aliase, damit bestehende Spiele weiter passen
-  felt: "#4E6A30",
-  feltLight: "#5E7A3A",
-  feltDark: "#37502A",
-  red: "#C5482E",
-  redDark: "#9A331D",
+  black: "#0B0B0D",
+  bg: "#0B0B0D",
+  panel: "#17171D",
+  panelHi: "#20202A",
+  gold: "#E8B23A",
+  goldHi: "#F7D77E",
+  goldDark: "#9C7320",
+  emerald: "#0E5C42",
+  emeraldHi: "#15795A",
+  emeraldDark: "#0A3F2E",
+  cream: "#F2E6C9",
+  white: "#FFFFFF",
+  muted: "#9A926F",
+  crimson: "#B11226",
+  crimsonDark: "#7C0C1A",
+  ink: "#0B0B0D",
+  stripe: "#0B0B0D",
+  // Aliase, damit bestehende Spiele weiterlaufen (auf neue Palette gemappt)
+  paper: "#17171D",
+  paperDark: "#101015",
+  felt: "#0E5C42",
+  feltLight: "#15795A",
+  feltDark: "#0A3F2E",
+  leaf: "#0E5C42",
+  leafDark: "#0A3F2E",
+  red: "#B11226",
+  redDark: "#7C0C1A",
+  wheel: "#B11226",
+  sky: "#2F6F6A",
+  inkSoft: "#9A926F",
+  tiger: "#E8B23A",
 };
 
 export const FONTS = {
-  display: "'Patrick Hand', 'Comic Sans MS', system-ui, cursive",
-  body: "'Nunito', system-ui, sans-serif",
+  display: "'Cinzel', Georgia, serif",
+  body: "'Jost', system-ui, sans-serif",
 };
 
-export function clear(ctx, W, H, color = COLORS.paper) {
+export function clear(ctx, W, H, color = COLORS.bg) {
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, W, H);
 }
@@ -61,19 +70,17 @@ export function panel(ctx, x, y, w, h, r, fill, stroke, lineWidth = 2) {
   }
 }
 
-// Panel mit Janosch-Tintenkontur (kräftiger Außenstrich + feine Innenlinie).
-export function inkPanel(ctx, x, y, w, h, r, fill, lineWidth = 3) {
+// Déco-Panel: dunkle Fläche, feine Gold-Doppelkontur.
+export function inkPanel(ctx, x, y, w, h, r, fill = COLORS.panel, lineWidth = 2) {
   roundRectPath(ctx, x, y, w, h, r);
-  if (fill) {
-    ctx.fillStyle = fill;
-    ctx.fill();
-  }
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = COLORS.ink;
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.lineJoin = "miter";
+  ctx.strokeStyle = COLORS.gold;
   ctx.lineWidth = lineWidth;
   ctx.stroke();
-  roundRectPath(ctx, x + 3, y + 3, w - 6, h - 6, Math.max(0, r - 3));
-  ctx.strokeStyle = "rgba(43,33,24,0.25)";
+  roundRectPath(ctx, x + 4, y + 4, w - 8, h - 8, Math.max(0, r - 3));
+  ctx.strokeStyle = "rgba(232,178,58,0.28)";
   ctx.lineWidth = 1;
   ctx.stroke();
 }
@@ -81,179 +88,180 @@ export function inkPanel(ctx, x, y, w, h, r, fill, lineWidth = 3) {
 export function text(ctx, str, x, y, opts = {}) {
   const {
     font = `20px ${FONTS.body}`,
-    color = COLORS.ink,
+    color = COLORS.cream,
     align = "left",
     baseline = "alphabetic",
+    spacing = null,
   } = opts;
   ctx.font = font;
   ctx.fillStyle = color;
   ctx.textAlign = align;
   ctx.textBaseline = baseline;
+  if (spacing != null && "letterSpacing" in ctx) ctx.letterSpacing = spacing + "px";
   ctx.fillText(str, x, y);
+  if (spacing != null && "letterSpacing" in ctx) ctx.letterSpacing = "0px";
 }
 
-// Maskottchen: Janoschs Tigerente als Holz-Zugtier (gelber Körper, schwarze
-// Streifen, oranger Schnabel, rote Räder, grüne Zugschnur). s = Körperradius.
+// Déco-Eckornament (kleiner Strahlen-Fächer).
+export function decoCorner(ctx, x, y, s, flipX = 1, flipY = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(flipX, flipY);
+  ctx.strokeStyle = COLORS.gold;
+  ctx.lineWidth = 1.4;
+  for (let i = 0; i < 4; i++) {
+    const a = (Math.PI / 2) * (i / 3);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(Math.cos(a) * s, Math.sin(a) * s);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// Schlanke Enten-Silhouette (Kopf + Schnabel), für Chip-Mitte & Mascot-Basis.
+function duckHead(ctx, cx, cy, s, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(cx, cy, s, 0, Math.PI * 2);
+  ctx.fill();
+  // Schnabel
+  ctx.beginPath();
+  ctx.moveTo(cx + s * 0.5, cy - s * 0.15);
+  ctx.lineTo(cx + s * 1.5, cy);
+  ctx.lineTo(cx + s * 0.55, cy + s * 0.45);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// Mascot: "The Golden Drake" — dapperer Gold-Erpel mit Zylinder & Fliege.
 export function drawTigerente(ctx, cx, cy, s) {
   ctx.save();
   ctx.lineJoin = "round";
-  const ink = COLORS.ink;
-  const lw = Math.max(1.5, s * 0.08);
-
-  // Zugschnur
-  ctx.strokeStyle = "#4E7A3A";
-  ctx.lineWidth = Math.max(1.5, s * 0.07);
-  ctx.beginPath();
-  ctx.moveTo(cx - s * 1.05, cy + s * 0.95);
-  ctx.quadraticCurveTo(cx - s * 1.5, cy + s * 1.1, cx - s * 1.7, cy + s * 0.7);
-  ctx.stroke();
-
-  // Räder
-  const wy = cy + s * 0.82;
-  const wr = s * 0.28;
-  for (const wx of [cx - s * 0.5, cx + s * 0.55]) {
-    ctx.beginPath();
-    ctx.arc(wx, wy, wr, 0, Math.PI * 2);
-    ctx.fillStyle = COLORS.wheel;
-    ctx.fill();
-    ctx.lineWidth = lw;
-    ctx.strokeStyle = ink;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(wx, wy, wr * 0.34, 0, Math.PI * 2);
-    ctx.fillStyle = ink;
-    ctx.fill();
-  }
+  const gold = COLORS.gold, dark = COLORS.black;
 
   // Körper
+  ctx.fillStyle = gold;
   ctx.beginPath();
-  ctx.ellipse(cx, cy, s, s * 0.72, 0, 0, Math.PI * 2);
-  ctx.fillStyle = COLORS.tiger;
+  ctx.ellipse(cx, cy + s * 0.15, s, s * 0.72, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Streifen (auf Körper geclippt)
-  ctx.save();
-  ctx.clip();
-  ctx.strokeStyle = COLORS.stripe;
-  ctx.lineWidth = Math.max(2, s * 0.13);
-  ctx.lineCap = "round";
-  for (let i = -2; i <= 2; i++) {
-    const ox = cx + i * s * 0.42 - s * 0.08;
-    ctx.beginPath();
-    ctx.moveTo(ox, cy - s * 0.75);
-    ctx.quadraticCurveTo(ox + s * 0.2, cy, ox, cy + s * 0.75);
-    ctx.stroke();
-  }
-  ctx.restore();
-
-  // Körper-Kontur
+  // Fliege
+  ctx.fillStyle = COLORS.crimson;
   ctx.beginPath();
-  ctx.ellipse(cx, cy, s, s * 0.72, 0, 0, Math.PI * 2);
-  ctx.lineWidth = lw;
-  ctx.strokeStyle = ink;
-  ctx.stroke();
+  ctx.moveTo(cx + s * 0.25, cy - s * 0.15);
+  ctx.lineTo(cx + s * 0.7, cy - s * 0.4);
+  ctx.lineTo(cx + s * 0.7, cy + s * 0.1);
+  ctx.closePath();
+  ctx.moveTo(cx + s * 0.25, cy - s * 0.15);
+  ctx.lineTo(cx - s * 0.2, cy - s * 0.4);
+  ctx.lineTo(cx - s * 0.2, cy + s * 0.1);
+  ctx.closePath();
+  ctx.fill();
 
   // Kopf
-  const hx = cx + s * 0.6;
-  const hy = cy - s * 0.62;
-  const hr = s * 0.5;
+  const hx = cx + s * 0.55, hy = cy - s * 0.5, hr = s * 0.5;
+  ctx.fillStyle = gold;
   ctx.beginPath();
   ctx.arc(hx, hy, hr, 0, Math.PI * 2);
-  ctx.fillStyle = COLORS.tiger;
   ctx.fill();
-  ctx.lineWidth = lw;
-  ctx.strokeStyle = ink;
-  ctx.stroke();
-
-  // Kopf-Streifen
-  ctx.beginPath();
-  ctx.arc(hx, hy, hr * 0.92, -Math.PI * 0.85, -Math.PI * 0.25);
-  ctx.lineWidth = Math.max(1.5, s * 0.11);
-  ctx.strokeStyle = COLORS.stripe;
-  ctx.stroke();
 
   // Schnabel
   ctx.beginPath();
-  ctx.moveTo(hx + hr * 0.45, hy - hr * 0.08);
-  ctx.lineTo(hx + hr * 1.55, hy + hr * 0.04);
-  ctx.lineTo(hx + hr * 0.5, hy + hr * 0.5);
+  ctx.moveTo(hx + hr * 0.5, hy - hr * 0.05);
+  ctx.lineTo(hx + hr * 1.5, hy + hr * 0.05);
+  ctx.lineTo(hx + hr * 0.55, hy + hr * 0.45);
   ctx.closePath();
-  ctx.fillStyle = "#EE8A2B";
   ctx.fill();
-  ctx.lineWidth = lw * 0.8;
-  ctx.strokeStyle = ink;
-  ctx.stroke();
+
+  // Zylinder
+  ctx.fillStyle = dark;
+  ctx.fillRect(hx - hr * 0.8, hy - hr * 2.1, hr * 1.6, hr * 1.3);
+  ctx.fillRect(hx - hr * 1.15, hy - hr * 0.95, hr * 2.3, hr * 0.32);
+  ctx.fillStyle = gold;
+  ctx.fillRect(hx - hr * 0.8, hy - hr * 1.1, hr * 1.6, hr * 0.22);
 
   // Auge
+  ctx.fillStyle = dark;
   ctx.beginPath();
-  ctx.arc(hx + hr * 0.16, hy - hr * 0.16, Math.max(1.6, s * 0.1), 0, Math.PI * 2);
-  ctx.fillStyle = ink;
+  ctx.arc(hx + hr * 0.16, hy - hr * 0.05, Math.max(1.5, s * 0.09), 0, Math.PI * 2);
   ctx.fill();
 
   ctx.restore();
 }
 
-// Währungs-Icon: goldene Tigerenten-Münze. r = Radius.
+// Währungs-Icon: Entenchip (Casino-Chip mit Enten-Silhouette). r = Radius.
 export function drawCoin(ctx, cx, cy, r) {
   ctx.save();
-  ctx.lineJoin = "round";
-
-  // Münzkörper mit Verlauf
-  const g = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, r * 0.2, cx, cy, r);
-  g.addColorStop(0, COLORS.goldHi);
-  g.addColorStop(1, COLORS.gold);
+  // Außenring
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = g;
+  ctx.fillStyle = COLORS.gold;
   ctx.fill();
-  ctx.lineWidth = Math.max(1.5, r * 0.12);
-  ctx.strokeStyle = COLORS.ink;
-  ctx.stroke();
-
-  // Tiger-Streifen über die Münze (geclippt)
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx, cy, r * 0.86, 0, Math.PI * 2);
-  ctx.clip();
-  ctx.strokeStyle = COLORS.stripe;
-  ctx.lineWidth = Math.max(1.4, r * 0.16);
-  ctx.lineCap = "round";
-  for (let i = -1; i <= 1; i++) {
-    const ox = cx + i * r * 0.5;
-    ctx.beginPath();
-    ctx.moveTo(ox, cy - r);
-    ctx.quadraticCurveTo(ox + r * 0.22, cy, ox, cy + r);
-    ctx.stroke();
+  // Randkerben
+  ctx.fillStyle = COLORS.black;
+  const notches = 8;
+  for (let i = 0; i < notches; i++) {
+    const a = (i / notches) * Math.PI * 2;
+    ctx.save();
+    ctx.translate(cx + Math.cos(a) * r * 0.86, cy + Math.sin(a) * r * 0.86);
+    ctx.rotate(a);
+    ctx.fillRect(-r * 0.06, -r * 0.18, r * 0.12, r * 0.36);
+    ctx.restore();
   }
-  ctx.restore();
-
-  // kleiner Schnabel + Auge -> erkennbar als Ente
+  // Innenfeld
   ctx.beginPath();
-  ctx.moveTo(cx + r * 0.2, cy - r * 0.12);
-  ctx.lineTo(cx + r * 0.78, cy - r * 0.02);
-  ctx.lineTo(cx + r * 0.22, cy + r * 0.22);
-  ctx.closePath();
-  ctx.fillStyle = "#EE8A2B";
+  ctx.arc(cx, cy, r * 0.62, 0, Math.PI * 2);
+  ctx.fillStyle = COLORS.emerald;
   ctx.fill();
   ctx.lineWidth = Math.max(1, r * 0.08);
-  ctx.strokeStyle = COLORS.ink;
+  ctx.strokeStyle = COLORS.gold;
   ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx - r * 0.05, cy - r * 0.22, Math.max(1.2, r * 0.1), 0, Math.PI * 2);
-  ctx.fillStyle = COLORS.ink;
-  ctx.fill();
-
+  // Enten-Silhouette in der Mitte
+  duckHead(ctx, cx - r * 0.12, cy, r * 0.26, COLORS.gold);
   ctx.restore();
 }
 
-// Währungsanzeige: Münze + Zahl. Gibt die Gesamtbreite zurück.
+export const drawChip = drawCoin;
+
+// Währungsanzeige: Chip + Zahl. Gibt die Gesamtbreite zurück.
 export function currency(ctx, x, y, amount, opts = {}) {
   const r = opts.r || 13;
-  const font = opts.font || `bold ${Math.round(r * 1.5)}px ${FONTS.body}`;
-  const color = opts.color || COLORS.ink;
+  const font = opts.font || `600 ${Math.round(r * 1.5)}px ${FONTS.body}`;
+  const color = opts.color || COLORS.gold;
   drawCoin(ctx, x + r, y, r);
   const label = amount.toLocaleString("de-DE");
   text(ctx, label, x + r * 2 + 8, y, { font, color, align: "left", baseline: "middle" });
   ctx.font = font;
   return r * 2 + 8 + ctx.measureText(label).width;
+}
+
+// Standard-HUD-Badge (dunkel + Gold): Chip + Betrag, zentriert. Optionales Label darunter.
+export function chipBadge(ctx, x, y, w, h, amount, label) {
+  inkPanel(ctx, x, y, w, h, 8, COLORS.panel, 2);
+  const r = 13;
+  const font = `600 22px ${FONTS.body}`;
+  ctx.font = font;
+  const num = amount.toLocaleString("de-DE");
+  const total = r * 2 + 8 + ctx.measureText(num).width;
+  const sx = x + (w - total) / 2;
+  const cyMid = label ? y + h / 2 - 5 : y + h / 2;
+  currency(ctx, sx, cyMid, amount, { r, font, color: COLORS.gold });
+  if (label) {
+    text(ctx, label, x + w / 2, y + h - 9, {
+      font: `500 9px ${FONTS.body}`, color: COLORS.muted, align: "center", spacing: 1.5,
+    });
+  }
+}
+
+// Einsatz-Box (dunkel + Gold): Chip + Betrag, zentriert.
+export function betBox(ctx, x, y, w, h, amount) {
+  inkPanel(ctx, x, y, w, h, 8, COLORS.panelHi, 2);
+  const r = 12;
+  const font = `600 19px ${FONTS.body}`;
+  ctx.font = font;
+  const num = amount.toLocaleString("de-DE");
+  const total = r * 2 + 8 + ctx.measureText(num).width;
+  const sx = x + (w - total) / 2;
+  currency(ctx, sx, y + h / 2, amount, { r, font, color: COLORS.gold });
 }
