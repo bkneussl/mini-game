@@ -9,6 +9,7 @@ import { createBlackjack } from "./games/blackjack.js";
 import { createSlots } from "./games/slots.js";
 import { createHigherLower } from "./games/higherlower.js";
 import { createRoulette } from "./games/roulette.js";
+import { createSnake } from "./games/snake.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -36,7 +37,7 @@ app.games = [
   { id: "duckdebug", name: "Rubber Duck Debugging", tag: "Arcade", accent: "#7ee0a8", create: createDuckDebug },
   { id: "higherlower", name: "Higher / Lower", tag: "Karten", accent: COLORS.sky, create: createHigherLower },
   { id: "roulette", name: "Enten-Roulette", tag: "Rad", accent: "#ff9a3c", create: createRoulette },
-  { id: "snake", name: "Enten-Snake", tag: "Arcade", accent: "#9be36b", create: null },
+  { id: "snake", name: "Enten-Snake", tag: "Arcade", accent: "#9be36b", create: createSnake },
   { id: "pinball", name: "Tigerenten-Pinball", tag: "Arcade", accent: "#d98cff", create: null },
 ];
 
