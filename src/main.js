@@ -6,6 +6,7 @@ import { createLobby } from "./scenes/lobby.js";
 import { createShop } from "./scenes/shop.js";
 import { createDuckDebug } from "./games/duckdebug.js";
 import { createBlackjack } from "./games/blackjack.js";
+import { createSlots } from "./games/slots.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -20,7 +21,7 @@ const app = { canvas, ctx, W, H, wallet };
 // freigeschaltet, sobald das Spiel gebaut ist.
 app.games = [
   { id: "blackjack", name: "Blackjack", tag: "Kartentisch", accent: COLORS.red, create: createBlackjack },
-  { id: "slots", name: "Tigerenten-Slot", tag: "Automat", accent: COLORS.gold, create: null },
+  { id: "slots", name: "Tigerenten-Slot", tag: "Automat", accent: COLORS.gold, create: createSlots },
   { id: "duckdebug", name: "Rubber Duck Debugging", tag: "Arcade", accent: "#7ee0a8", create: createDuckDebug },
   { id: "higherlower", name: "Higher / Lower", tag: "Karten", accent: "#5ec8ff", create: null },
   { id: "roulette", name: "Enten-Roulette", tag: "Rad", accent: "#ff9a3c", create: null },
